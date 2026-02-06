@@ -28,20 +28,20 @@
             padding: 2rem;
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            width: 90%;
+            width: 85%;
             max-width: 400px;
             position: relative;
+            z-index: 10;
         }
 
-        h1 { color: var(--pink); }
-        p { font-size: 1.2rem; color: #555; }
+        h1 { color: var(--pink); margin-bottom: 10px; }
+        p { font-size: 1.1rem; color: #555; line-height: 1.4; }
 
         .btn-group {
             display: flex;
             justify-content: center;
             gap: 15px;
             margin-top: 20px;
-            flex-wrap: wrap;
         }
 
         button {
@@ -50,13 +50,13 @@
             border: none;
             border-radius: 50px;
             cursor: pointer;
-            transition: transform 0.2s, background 0.3s;
+            transition: transform 0.2s;
         }
 
         .btn-fine { background-color: #4caf50; color: white; }
         .btn-not-fine { background-color: #f44336; color: white; }
-        .btn-yes { background-color: var(--pink); color: white; font-weight: bold; }
-        .btn-no { background-color: #888; color: white; position: absolute; }
+        .btn-yes { background-color: var(--pink); color: white; font-weight: bold; padding: 15px 40px; }
+        .btn-no { background-color: #888; color: white; position: absolute; transition: 0.1s; z-index: 100; }
 
         .hidden { display: none; }
 
@@ -76,20 +76,25 @@
 </head>
 <body>
 
+    <audio id="mySong" loop>
+        <source src="song.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
     <div class="container" id="main-card">
         <div id="step1">
             <h1>Hi Ms. Sujina ❤️</h1>
             <p>How Are you?</p>
             <div class="btn-group">
-                <button class="btn-fine" onclick="handleMood('fine')">Fine</button>
-                <button class="btn-not-fine" onclick="handleMood('not-fine')">Not Fine</button>
+                <button class="btn-fine" onclick="startApp('fine')">Fine</button>
+                <button class="btn-not-fine" onclick="startApp('not-fine')">Not Fine</button>
             </div>
         </div>
 
         <div id="step2" class="hidden">
-            <h2 id="mood-response"></h2>
-            <p style="font-size: 1.5rem; font-weight: bold;">Would you be my Valentine? 🌹</p>
-            <div class="btn-group" style="height: 100px; position: relative;">
+            <h2 id="mood-response" style="color: var(--pink); font-size: 1.2rem;"></h2>
+            <p style="font-size: 1.4rem; font-weight: bold; margin-top: 20px;">Would you be my Valentine? 🌹</p>
+            <div class="btn-group" style="height: 120px; align-items: center;">
                 <button class="btn-yes" onclick="handleYes()">Yes!</button>
                 <button class="btn-no" id="no-button" onmouseover="moveNoButton()" onclick="moveNoButton()">No</button>
             </div>
@@ -98,12 +103,17 @@
         <div id="step3" class="hidden">
             <div class="celebration-text">yeyeyeyyeye! 🎉</div>
             <p>My baby is my valentine! ❤️</p>
-            <p>Our first valentine together, many more to go! ♾️</p>
+            <p>Our first valentine together, more to go! ♾️</p>
         </div>
     </div>
 
     <script>
-        function handleMood(status) {
+        const song = document.getElementById('mySong');
+
+        function startApp(status) {
+            // Play music on first interaction
+            song.play().catch(error => console.log("Playback failed:", error));
+
             const step1 = document.getElementById('step1');
             const step2 = document.getElementById('step2');
             const responseHeading = document.getElementById('mood-response');
@@ -120,9 +130,10 @@
 
         function moveNoButton() {
             const btn = document.getElementById('no-button');
-            // Move button to a random position within the container
-            const x = Math.random() * (window.innerWidth - btn.offsetWidth - 20);
-            const y = Math.random() * (window.innerHeight - btn.offsetHeight - 20);
+            // Constraints to keep button within visible screen area
+            const padding = 50;
+            const x = Math.random() * (window.innerWidth - btn.offsetWidth - padding);
+            const y = Math.random() * (window.innerHeight - btn.offsetHeight - padding);
             
             btn.style.position = 'fixed';
             btn.style.left = x + 'px';
@@ -133,29 +144,12 @@
             document.getElementById('step2').classList.add('hidden');
             document.getElementById('step3').classList.remove('hidden');
             
-            // Confetti Blast!
-            var duration = 5 * 1000;
-            var end = Date.now() + duration;
-
+            // Endless Confetti
+            var end = Date.now() + (10 * 1000);
             (function frame() {
-              confetti({
-                particleCount: 3,
-                angle: 60,
-                spread: 55,
-                origin: { x: 0 },
-                colors: ['#ff4d6d', '#ffb3c1', '#ffffff']
-              });
-              confetti({
-                particleCount: 3,
-                angle: 120,
-                spread: 55,
-                origin: { x: 1 },
-                colors: ['#ff4d6d', '#ffb3c1', '#ffffff']
-              });
-
-              if (Date.now() < end) {
-                requestAnimationFrame(frame);
-              }
+              confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#ff4d6d', '#ffffff'] });
+              confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#ff4d6d', '#ffffff'] });
+              if (Date.now() < end) requestAnimationFrame(frame);
             }());
         }
     </script>
