@@ -6,11 +6,7 @@
     <title>For Sujina ❤️</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        :root {
-            --pink: #ff4d6d;
-            --light-pink: #ffb3c1;
-        }
-
+        :root { --pink: #ff4d6d; --light-pink: #ffb3c1; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #fff0f3;
@@ -22,138 +18,114 @@
             overflow: hidden;
             text-align: center;
         }
-
         .container {
             background: white;
-            padding: 2rem;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            padding: 2.5rem;
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(255, 77, 109, 0.2);
             width: 85%;
             max-width: 400px;
-            position: relative;
             z-index: 10;
         }
-
-        h1 { color: var(--pink); margin-bottom: 10px; }
-        p { font-size: 1.1rem; color: #555; line-height: 1.4; }
-
-        .btn-group {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
+        h1 { color: var(--pink); font-size: 1.8rem; }
+        .btn-group { display: flex; justify-content: center; gap: 15px; margin-top: 25px; }
         button {
-            padding: 12px 25px;
+            padding: 12px 28px;
             font-size: 1rem;
             border: none;
             border-radius: 50px;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: 0.3s;
         }
-
         .btn-fine { background-color: #4caf50; color: white; }
         .btn-not-fine { background-color: #f44336; color: white; }
-        .btn-yes { background-color: var(--pink); color: white; font-weight: bold; padding: 15px 40px; }
-        .btn-no { background-color: #888; color: white; position: absolute; transition: 0.1s; z-index: 100; }
-
+        .btn-yes { background-color: var(--pink); color: white; font-weight: bold; transform: scale(1.1); }
+        .btn-no { background-color: #888; color: white; position: absolute; z-index: 999; }
         .hidden { display: none; }
-
-        .celebration-text {
-            font-size: 1.5rem;
-            color: var(--pink);
-            font-weight: bold;
-            animation: heartBeat 1.5s infinite;
-        }
-
-        @keyframes heartBeat {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
     </style>
 </head>
-<body>
-
-    <audio id="mySong" loop>
+<body onclick="playMusic()"> <audio id="mySong" loop>
         <source src="song.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
     </audio>
 
-    <div class="container" id="main-card">
+    <div class="container">
         <div id="step1">
             <h1>Hi Ms. Sujina ❤️</h1>
             <p>How Are you?</p>
             <div class="btn-group">
-                <button class="btn-fine" onclick="startApp('fine')">Fine</button>
-                <button class="btn-not-fine" onclick="startApp('not-fine')">Not Fine</button>
+                <button class="btn-fine" onclick="nextStep('fine')">Fine</button>
+                <button class="btn-not-fine" onclick="nextStep('not-fine')">Not Fine</button>
             </div>
         </div>
 
         <div id="step2" class="hidden">
-            <h2 id="mood-response" style="color: var(--pink); font-size: 1.2rem;"></h2>
-            <p style="font-size: 1.4rem; font-weight: bold; margin-top: 20px;">Would you be my Valentine? 🌹</p>
-            <div class="btn-group" style="height: 120px; align-items: center;">
-                <button class="btn-yes" onclick="handleYes()">Yes!</button>
-                <button class="btn-no" id="no-button" onmouseover="moveNoButton()" onclick="moveNoButton()">No</button>
+            <h2 id="response-msg" style="color: var(--pink);"></h2>
+            <p style="font-size: 1.3rem; font-weight: bold;">Would you be my Valentine? 🌹</p>
+            <div class="btn-group" style="height: 100px;">
+                <button class="btn-yes" onclick="showFinal()">Yes!</button>
+                <button class="btn-no" id="no-btn" onmouseover="moveNo()" onclick="moveNo()">No</button>
             </div>
         </div>
 
         <div id="step3" class="hidden">
-            <div class="celebration-text">yeyeyeyyeye! 🎉</div>
-            <p>My baby is my valentine! ❤️</p>
+            <h1 style="font-size: 2.5rem;">yeyeyeyyeye! 🎉</h1>
+            <p style="font-size: 1.2rem;">My baby is my valentine! ❤️</p>
             <p>Our first valentine together, more to go! ♾️</p>
         </div>
     </div>
 
     <script>
         const song = document.getElementById('mySong');
+        let musicStarted = false;
 
-        function startApp(status) {
-            // Play music on first interaction
-            song.play().catch(error => console.log("Playback failed:", error));
+        // Try to play immediately on load
+        window.addEventListener('load', () => {
+            playMusic();
+        });
 
-            const step1 = document.getElementById('step1');
-            const step2 = document.getElementById('step2');
-            const responseHeading = document.getElementById('mood-response');
-
-            step1.classList.add('hidden');
-            step2.classList.remove('hidden');
-
-            if (status === 'fine') {
-                responseHeading.innerText = "Lets make it moree fine babyyyyy! ✨";
-            } else {
-                responseHeading.innerText = "awwww my sanu is not feelng good? 😢 Lets make it better huss??";
+        function playMusic() {
+            if (!musicStarted) {
+                song.play().then(() => {
+                    musicStarted = true;
+                }).catch(e => {
+                    console.log("Waiting for user interaction to play music...");
+                });
             }
         }
 
-        function moveNoButton() {
-            const btn = document.getElementById('no-button');
-            // Constraints to keep button within visible screen area
-            const padding = 50;
-            const x = Math.random() * (window.innerWidth - btn.offsetWidth - padding);
-            const y = Math.random() * (window.innerHeight - btn.offsetHeight - padding);
+        function nextStep(mood) {
+            playMusic(); // Ensure music plays on button click
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.remove('hidden');
+            const msg = document.getElementById('response-msg');
             
-            btn.style.position = 'fixed';
+            if(mood === 'fine') {
+                msg.innerText = "Lets make it moree fine babyyyyy! ✨";
+            } else {
+                msg.innerText = "awwww my sanu is not feelng good? 😢 Lets make it better huss??";
+            }
+        }
+
+        function moveNo() {
+            const btn = document.getElementById('no-btn');
+            const x = Math.random() * (window.innerWidth - btn.offsetWidth - 40);
+            const y = Math.random() * (window.innerHeight - btn.offsetHeight - 40);
             btn.style.left = x + 'px';
             btn.style.top = y + 'px';
         }
 
-        function handleYes() {
+        function showFinal() {
             document.getElementById('step2').classList.add('hidden');
             document.getElementById('step3').classList.remove('hidden');
             
-            // Endless Confetti
-            var end = Date.now() + (10 * 1000);
+            // Non-stop Confetti
+            var end = Date.now() + (15 * 1000);
             (function frame() {
-              confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#ff4d6d', '#ffffff'] });
-              confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#ff4d6d', '#ffffff'] });
-              if (Date.now() < end) requestAnimationFrame(frame);
+                confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#ff4d6d', '#ffffff'] });
+                confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#ff4d6d', '#ffffff'] });
+                if (Date.now() < end) requestAnimationFrame(frame);
             }());
         }
     </script>
 </body>
 </html>
-
-
